@@ -24,7 +24,9 @@
     "lab:fixtures": "npm run lab:generate -- --preset initial --output-dir fixtures/source",
     "lab:inspect": "npm run lab:build && node packages/reverse-engineering-lab/dist/cli/inspect-wav.js",
     "lab:compare": "npm run lab:build && node packages/reverse-engineering-lab/dist/cli/compare-binary.js",
-    "lab:validate-experiment": "npm run lab:build && node packages/reverse-engineering-lab/dist/cli/validate-experiment.js"
+    "lab:validate-experiment": "npm run lab:build && node packages/reverse-engineering-lab/dist/cli/validate-experiment.js",
+    "pad-info:build": "npm run build --workspace @sp404-toolkit/pad-info",
+    "pad-info:analyze": "npm run pad-info:build && node packages/pad-info/dist/cli/analyze.js"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

@@ -65,6 +65,21 @@ All inspection and comparison commands support human-readable, JSON and
 Markdown reports. See [`docs/reverse-engineering`](docs/reverse-engineering)
 before collecting official converter output. No Roland writer is implemented.
 
+## PAD_INFO Analyzer
+
+The read-only v0.1 analyzer decodes all 120 fixed-size records without changing
+the source file:
+
+```sh
+npm run pad-info:analyze -- /private/path/ROLAND/SP-404SX/SMPL/PAD_INFO.BIN
+npm run pad-info:analyze -- /private/path/PAD_INFO.BIN --pad A1
+npm run pad-info:analyze -- /private/path/PAD_INFO.BIN --occupied-only --format json
+```
+
+Formats are `human`, `json`, and `markdown`. Keep Roland-generated files
+outside the public repository; only derived reports and hashes may be added
+after provenance review.
+
 ## Project structure
 
 - `apps/web`: user interface only
@@ -73,6 +88,7 @@ before collecting official converter output. No Roland writer is implemented.
 - `packages/manifest`: manifest v1 parsing and serialization
 - `packages/validator`: reusable validation rules
 - `packages/roland-sp404sx`: documented conversion boundary (no speculative writer)
+- `packages/pad-info`: read-only `PAD_INFO.BIN` parser and analyzer
 - `docs`: architecture, roadmap, testing and reverse-engineering notes
 - `fixtures`: synthetic and independently distributable test material only
 
