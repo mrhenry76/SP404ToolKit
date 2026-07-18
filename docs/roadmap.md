@@ -7,6 +7,20 @@
 - automated tests and three-platform CI
 - documentation and non-speculative Roland boundary
 
+Status: complete. Local verification and the Linux/macOS/Windows CI matrix are
+green.
+
+## Reverse Engineering Lab v0.2 — prepared
+
+- deterministic synthetic fixtures and provenance records
+- WAV structure inspection and byte-difference tooling
+- controlled `RLND` and `PAD_INFO.BIN` experiment matrices
+- explicit evidence promotion from `UNKNOWN`/`OBSERVED` to `CONFIRMED`
+- SP-404SX hardware verification baseline
+
+No Roland writer is included. See
+[`milestones/reverse-engineering-lab-v0.2.md`](milestones/reverse-engineering-lab-v0.2.md).
+
 ## Milestone 1 — WAV import and pad mapping
 
 - multi-file drag and drop
