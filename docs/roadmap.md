@@ -1,50 +1,209 @@
-# Roadmap
+# SP404ToolKit Roadmap
 
-## Foundation v0.1 — current
+## Vision
 
-- TypeScript monorepo and minimal web app
-- WAV parser, pad model, filename mapping and manifest v1
-- automated tests and three-platform CI
-- documentation and non-speculative Roland boundary
+SP404ToolKit nasce come ambiente per preparare, organizzare e trasferire sample audio verso sampler hardware.
 
-Status: complete. Local verification and the Linux/macOS/Windows CI matrix are
-green.
+Il primo hardware supportato è Roland SP-404SX.
 
-## Reverse Engineering Lab v0.2 — prepared
+L'architettura mantiene separati:
 
-- deterministic synthetic fixtures and provenance records
-- WAV structure inspection and byte-difference tooling
-- controlled `RLND` and `PAD_INFO.BIN` experiment matrices
-- explicit evidence promotion from `UNKNOWN`/`OBSERVED` to `CONFIRMED`
-- SP-404SX hardware verification baseline
+- core audio/project;
+- hardware adapter;
+- formati proprietari.
 
-No Roland writer is included. See
-[`milestones/reverse-engineering-lab-v0.2.md`](milestones/reverse-engineering-lab-v0.2.md).
+---
 
-## Milestone 1 — WAV import and pad mapping
+# Completed Milestones
 
-- multi-file drag and drop
-- interactive A1–J12 mapping
-- complete technical validation
-- manifest download and reopen
+## Foundation v0.1
 
-## Milestone 2 — Roland WAV converter
+Status: completed
 
-- verified `RLND` writer
-- PCM offset and naming rules
-- golden files and hardware verification
+Obiettivi:
 
-## Milestone 3 — `PAD_INFO.BIN`
+- struttura repository;
+- monorepo setup;
+- CI;
+- test framework;
+- documentazione iniziale.
 
-- verified 120-record writer
-- occupied and empty records
-- multi-pad tests and hardware verification
+---
 
-## Milestone 4 — SD package builder
+## Reverse Engineering Lab v0.2
 
-- complete folder structure and ZIP output
-- reporting, backup and experimental direct writing
+Status: completed
 
-## Milestone 5 — public beta
+Obiettivi:
 
-- PWA/offline support, user documentation and cross-browser testing
+- ambiente controllato per esperimenti;
+- fixture sintetiche;
+- confronto binario;
+- raccolta evidenze.
+
+Principi:
+
+- nessuna interpretazione senza evidenza;
+- nessun writer;
+- nessuna modifica ai file Roland originali.
+
+---
+
+## Batch 001 Fixture Framework
+
+Status: completed
+
+Obiettivi:
+
+- fixture audio controllate;
+- verifica soglie durata;
+- validazione conversione Roland;
+- raccolta output.
+
+---
+
+## PAD_INFO Analyzer v0.1
+
+Status: completed
+
+Obiettivi:
+
+- parser read-only PAD_INFO.BIN;
+- mapping pad A1-J12;
+- analisi record;
+- riconoscimento mono/stereo;
+- gestione campi sconosciuti.
+
+---
+
+# Milestone v0.4 — Core Audio Preparation Engine Foundation
+
+Status: planned
+
+## Obiettivo
+
+Creare il nucleo audio indipendente dall'hardware.
+
+Il Toolkit deve poter:
+
+- importare sample;
+- analizzare caratteristiche audio;
+- generare metadata;
+- applicare profili di preparazione;
+- salvare risultati in un progetto.
+
+---
+
+## Componenti
+
+### Audio Analyzer
+
+Funzioni:
+
+- formato WAV;
+- sample rate;
+- bit depth;
+- durata;
+- mono/stereo;
+- loudness;
+- peak;
+- true peak.
+
+---
+
+### Audio Preparation Engine
+
+Funzioni iniziali:
+
+- loudness target;
+- normalizzazione LUFS;
+- conversione mono/stereo;
+- trim silenzi;
+- export preparato.
+
+---
+
+### Project Model
+
+Definisce:
+
+- progetto;
+- sample;
+- metadata;
+- assegnazioni.
+
+---
+
+# Milestone v0.5 — Project Model
+
+Status: planned
+
+Obiettivo:
+
+Creare il modello dati principale.
+
+Il progetto interno deve essere hardware-independent.
+
+---
+
+# Milestone v0.6 — Web Interface
+
+Status: planned
+
+Obiettivo:
+
+Creare la prima esperienza utente.
+
+Funzioni:
+
+- sample browser;
+- preview audio;
+- pad grid;
+- drag & drop;
+- progetto visuale.
+
+---
+
+# Milestone v0.7 — SP-404SX Export Layer
+
+Status: planned
+
+Obiettivo:
+
+Collegare il project model al formato hardware.
+
+Nota:
+
+PAD_INFO writer e file proprietari saranno implementati solo dopo conferma completa del formato.
+
+---
+
+# Future Directions
+
+Possibili adapter:
+
+- Roland SP-404MKII;
+- Akai MPC;
+- Elektron Digitakt;
+- altri sampler.
+
+Possibili funzioni:
+
+- classificazione sample;
+- rilevamento transienti;
+- gestione live set;
+- analisi armonica.
+
+---
+
+# Non Goals
+
+Il progetto non vuole diventare:
+
+- una DAW;
+- un marketplace sample;
+- un sistema cloud obbligatorio.
+
+Il focus rimane:
+
+**Prepare the sound. Shape the performance.**
