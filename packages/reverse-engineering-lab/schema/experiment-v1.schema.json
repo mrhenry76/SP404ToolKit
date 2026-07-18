@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:sp404-toolkit:schema:experiment:1",
+  "title": "SP404 Toolkit reverse-engineering experiment v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "experimentId",
+    "createdAt",
+    "operator",
+    "status",
+    "changedVariable",
+    "source",
+    "officialConversion",
+    "hardwareVerification",
+    "redistribution",
+    "expectedObservation",
+    "actualObservation",
+    "notes"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "experimentId": { "type": "string", "minLength": 1 },
+    "createdAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?Z$" },
+    "operator": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["CONFIRMED", "OBSERVED", "HYPOTHESIS", "UNKNOWN"] },
+    "changedVariable": { "type": "string", "minLength": 1 },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "generatorVersion", "parameters"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "generatorVersion": { "type": "string", "minLength": 1 },
+        "parameters": { "type": "object" }
+      }
+    },
+    "officialConversion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["converterName", "converterVersion", "operatingSystem", "settings", "outputPath", "sha256"],
+      "properties": {
+        "converterName": { "type": "string" },
+        "converterVersion": { "type": "string" },
+        "operatingSystem": { "type": "string" },
+        "settings": { "type": "object" },
+        "outputPath": { "type": "string" },
+        "sha256": {
+          "anyOf": [
+            { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            { "const": "" }
+          ]
+        }
+      }
+    },
+    "hardwareVerification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["performed", "model", "firmware", "result", "notes"],
+      "properties": {
+        "performed": { "type": "boolean" },
+        "model": { "type": "string" },
+        "firmware": { "type": "string" },
+        "result": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "redistribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed", "basis"],
+      "properties": {
+        "allowed": { "type": "boolean" },
+        "basis": { "type": "string" }
+      }
+    },
+    "expectedObservation": { "type": "string" },
+    "actualObservation": { "type": "string" },
+    "notes": { "type": "array", "items": { "type": "string" } }
+  }
+}

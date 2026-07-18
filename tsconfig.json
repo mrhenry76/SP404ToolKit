@@ -6,6 +6,7 @@
     { "path": "packages/manifest" },
     { "path": "packages/validator" },
     { "path": "packages/roland-sp404sx" },
+    { "path": "packages/reverse-engineering-lab" },
     { "path": "apps/web/tsconfig.app.json" }
   ]
 }

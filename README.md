@@ -44,6 +44,27 @@ npm run typecheck
 npm run build
 ```
 
+## Reverse Engineering Lab
+
+The v0.2 laboratory provides deterministic synthetic fixtures and read-only
+diagnostic tools:
+
+```sh
+npm run lab:build
+npm run lab:generate -- --signal impulse --frames 100 --channels mono --output sample.wav
+npm run lab:fixtures -- --overwrite
+npm run lab:inspect -- fixtures/source/mono-impulse-100f.wav
+npm run lab:compare -- first.bin second.bin --context 8 --interpret
+npm run lab:validate-experiment -- experiments/example.json
+```
+
+Il generatore non sovrascrive WAV o metadata esistenti: la sostituzione richiede
+l'opzione esplicita `--overwrite`.
+
+All inspection and comparison commands support human-readable, JSON and
+Markdown reports. See [`docs/reverse-engineering`](docs/reverse-engineering)
+before collecting official converter output. No Roland writer is implemented.
+
 ## Project structure
 
 - `apps/web`: user interface only

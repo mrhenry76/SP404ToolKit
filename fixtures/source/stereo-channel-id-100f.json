@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "generatorVersion": "0.2.0",
+  "signalType": "stereo-channel-id",
+  "parameters": {
+    "frequencyHz": 440,
+    "amplitude": 0.5,
+    "impulseFrame": 0,
+    "constantValue": 1000,
+    "ascendingStart": -50,
+    "ascendingStep": 1
+  },
+  "sampleRate": 44100,
+  "bitDepth": 16,
+  "channels": 2,
+  "frames": 100,
+  "fileSize": 444,
+  "sha256": "0ba654a3c074f3630fdea9af93b2205cc0a418162554b343afa06c76a78a5df7"
+}

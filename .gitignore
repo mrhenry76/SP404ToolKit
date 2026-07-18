@@ -5,3 +5,15 @@ coverage/
 .DS_Store
 *.tsbuildinfo
 .vite/
+
+# Official converter outputs require provenance review before publication.
+fixtures/roland-output/*
+!fixtures/roland-output/.gitkeep
+fixtures/pad-info/*
+!fixtures/pad-info/.gitkeep
+experiments/**/roland-output/*
+!experiments/**/roland-output/.gitkeep
+experiments/**/pad-info/*
+!experiments/**/pad-info/.gitkeep
+experiments/**/reports/*
+!experiments/**/reports/.gitkeep
