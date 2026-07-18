@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "generatorVersion": "0.2.0",
+  "signalType": "sine",
+  "parameters": {
+    "frequencyHz": 440,
+    "amplitude": 0.5,
+    "impulseFrame": 0,
+    "constantValue": 1000,
+    "ascendingStart": -500,
+    "ascendingStep": 1
+  },
+  "sampleRate": 44100,
+  "bitDepth": 16,
+  "channels": 2,
+  "frames": 1000,
+  "fileSize": 4044,
+  "sha256": "1387610f9242be5ad90f83e149dd68104ceac39062a0ad663ba2e9c2ff929c48"
+}

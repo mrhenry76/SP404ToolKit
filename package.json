@@ -18,7 +18,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc -b",
-    "clean": "tsc -b --clean"
+    "clean": "tsc -b --clean",
+    "lab:build": "npm run build --workspace @sp404-toolkit/reverse-engineering-lab",
+    "lab:generate": "npm run lab:build && node packages/reverse-engineering-lab/dist/cli/generate.js",
+    "lab:fixtures": "npm run lab:generate -- --preset initial --output-dir fixtures/source",
+    "lab:inspect": "npm run lab:build && node packages/reverse-engineering-lab/dist/cli/inspect-wav.js",
+    "lab:compare": "npm run lab:build && node packages/reverse-engineering-lab/dist/cli/compare-binary.js",
+    "lab:validate-experiment": "npm run lab:build && node packages/reverse-engineering-lab/dist/cli/validate-experiment.js"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

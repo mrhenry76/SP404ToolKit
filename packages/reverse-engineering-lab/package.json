@@ -1,0 +1,15 @@
+{
+  "name": "@sp404-toolkit/reverse-engineering-lab",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@sp404-toolkit/wav": "*",
+    "ajv": "^8.17.1"
+  },
+  "scripts": {
+    "build": "tsc -b"
+  }
+}

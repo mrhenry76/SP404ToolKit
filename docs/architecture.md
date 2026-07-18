@@ -11,6 +11,7 @@ The repository is an npm-workspaces monorepo. Each package has a narrow role:
 | `manifest` | Version 1 schema boundary and JSON validation | Audio bytes |
 | `validator` | Technical and mapping messages | UI rendering or automatic correction |
 | `roland-sp404sx` | Future verified Roland output | Speculative binary fields and UI |
+| `reverse-engineering-lab` | Synthetic fixtures, read-only inspection, comparison and experiment records | Roland writers or semantic claims from unverified bytes |
 | `web` | Browser adapters and presentation | Binary format implementation |
 
 Dependencies point inward toward the small data model. Browser-specific file

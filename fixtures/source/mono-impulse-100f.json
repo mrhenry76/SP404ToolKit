@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "generatorVersion": "0.2.0",
+  "signalType": "impulse",
+  "parameters": {
+    "frequencyHz": 440,
+    "amplitude": 1,
+    "impulseFrame": 0,
+    "constantValue": 1000,
+    "ascendingStart": -50,
+    "ascendingStep": 1
+  },
+  "sampleRate": 44100,
+  "bitDepth": 16,
+  "channels": 1,
+  "frames": 100,
+  "fileSize": 244,
+  "sha256": "65bf2634311f8295584dee19f47c60196a37905c2b0aed6acccc20433bfd5259"
+}
