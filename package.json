@@ -1,0 +1,28 @@
+{
+  "name": "sp404-toolkit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first toolkit for preparing samples for the Roland SP-404SX and SP-404A.",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @sp404-toolkit/web",
+    "build": "tsc -b && npm run build --workspace @sp404-toolkit/web",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b",
+    "clean": "tsc -b --clean"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}
