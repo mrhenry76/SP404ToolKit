@@ -9,11 +9,14 @@ Dalla cartella principale del repository:
 
 ```sh
 npm ci
-npm run lab:fixtures
+npm run lab:fixtures -- --overwrite
 ```
 
 Il comando crea i sei WAV in `fixtures/source` e un JSON con lo stesso nome
 base per ciascun file. Il JSON contiene parametri, dimensione e SHA-256.
+`--overwrite` è necessario perché le fixture iniziali sono già versionate nel
+repository. Senza questa opzione il generatore rifiuta di sostituire sia il WAV
+sia il relativo JSON.
 
 ## Generare un file personalizzato
 
@@ -26,6 +29,9 @@ npm run lab:generate -- \
   --amplitude 1 \
   --output experiments/my-impulse.wav
 ```
+
+Per sostituire intenzionalmente un file già esistente, aggiungere
+`--overwrite`. Senza questa opzione il comando termina con un errore non-zero.
 
 Segnali disponibili:
 

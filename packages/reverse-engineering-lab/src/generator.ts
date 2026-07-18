@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { writePcm16Wav } from "@sp404-toolkit/wav";
 import { sha256 } from "./hash.js";
@@ -46,6 +46,10 @@ export type GeneratedFixture = {
   wav: Uint8Array;
   samples: Int16Array;
   metadata: FixtureMetadataV1;
+};
+
+export type WriteFixtureOptions = {
+  overwrite?: boolean | undefined;
 };
 
 function assertInteger(name: string, value: number, minimum: number, maximum = Number.MAX_SAFE_INTEGER): void {
@@ -139,13 +143,31 @@ export function generatePcm16Fixture(options: GeneratorOptions): GeneratedFixtur
   return { wav, samples, metadata };
 }
 
-export async function writeGeneratedFixture(outputPath: string, options: GeneratorOptions): Promise<GeneratedFixture> {
+async function pathExists(candidate: string): Promise<boolean> {
+  try {
+    await access(candidate);
+    return true;
+  } catch (error: unknown) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return false;
+    throw error;
+  }
+}
+
+export async function writeGeneratedFixture(
+  outputPath: string,
+  options: GeneratorOptions,
+  writeOptions: WriteFixtureOptions = {},
+): Promise<GeneratedFixture> {
   const generated = generatePcm16Fixture(options);
   const resolved = path.resolve(outputPath);
-  await mkdir(path.dirname(resolved), { recursive: true });
-  await writeFile(resolved, generated.wav);
   const metadataPath = resolved.toLowerCase().endsWith(".wav") ? `${resolved.slice(0, -4)}.json` : `${resolved}.json`;
-  await writeFile(metadataPath, `${JSON.stringify(generated.metadata, null, 2)}\n`, "utf8");
+  await mkdir(path.dirname(resolved), { recursive: true });
+  if (!writeOptions.overwrite && ((await pathExists(resolved)) || (await pathExists(metadataPath)))) {
+    throw new Error(`Refusing to overwrite existing fixture output. Use --overwrite to replace ${resolved} and ${metadataPath}.`);
+  }
+  const flag = writeOptions.overwrite ? "w" : "wx";
+  await writeFile(resolved, generated.wav, { flag });
+  await writeFile(metadataPath, `${JSON.stringify(generated.metadata, null, 2)}\n`, { encoding: "utf8", flag });
   return generated;
 }
 
@@ -158,10 +180,10 @@ export const INITIAL_FIXTURES: ReadonlyArray<{ fileName: string; options: Genera
   { fileName: "stereo-sine-1000f.wav", options: { signalType: "sine", frames: 1_000, channels: 2, frequencyHz: 440, amplitude: 0.5 } },
 ];
 
-export async function writeInitialFixtures(outputDirectory: string): Promise<GeneratedFixture[]> {
+export async function writeInitialFixtures(outputDirectory: string, writeOptions: WriteFixtureOptions = {}): Promise<GeneratedFixture[]> {
   const results: GeneratedFixture[] = [];
   for (const fixture of INITIAL_FIXTURES) {
-    results.push(await writeGeneratedFixture(path.join(outputDirectory, fixture.fileName), fixture.options));
+    results.push(await writeGeneratedFixture(path.join(outputDirectory, fixture.fileName), fixture.options, writeOptions));
   }
   return results;
 }

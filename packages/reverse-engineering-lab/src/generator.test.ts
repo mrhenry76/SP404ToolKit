@@ -1,7 +1,10 @@
 import { createHash } from "node:crypto";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { getPcmBytes, parseWav } from "@sp404-toolkit/wav";
-import { generatePcm16Fixture, INITIAL_FIXTURES } from "./generator.js";
+import { generatePcm16Fixture, INITIAL_FIXTURES, writeGeneratedFixture } from "./generator.js";
 
 function int16Values(bytes: Uint8Array): number[] {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -73,5 +76,23 @@ describe("deterministic PCM16 fixture generator", () => {
       "52559f051f5a7c4a9aa942a53dd1a2ce596abb70817cf257292876c4c57073a7",
       "1387610f9242be5ad90f83e149dd68104ceac39062a0ad663ba2e9c2ff929c48",
     ]);
+  });
+
+  it("refuses to overwrite fixture files unless explicitly allowed", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "sp404-fixture-"));
+    const output = path.join(directory, "fixture.wav");
+    const firstOptions = { signalType: "silence", frames: 4, channels: 1 } as const;
+    const secondOptions = { signalType: "constant", frames: 4, channels: 1, constantValue: 123 } as const;
+    try {
+      await writeGeneratedFixture(output, firstOptions);
+      const original = await readFile(output);
+      await expect(writeGeneratedFixture(output, secondOptions)).rejects.toThrow("Refusing to overwrite");
+      expect(await readFile(output)).toEqual(original);
+
+      const replacement = await writeGeneratedFixture(output, secondOptions, { overwrite: true });
+      expect(await readFile(output)).toEqual(Buffer.from(replacement.wav));
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
   });
 });
