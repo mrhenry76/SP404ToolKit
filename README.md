@@ -53,7 +53,7 @@ diagnostic tools:
 npm run lab:build
 npm run lab:generate -- --signal impulse --frames 100 --channels mono --output sample.wav
 npm run lab:fixtures -- --overwrite
-npm run lab:inspect -- fixtures/source/mono-impulse-100f.wav
+npm run lab:inspect -- fixtures/source/mono-impulse-5000f.wav
 npm run lab:compare -- first.bin second.bin --context 8 --interpret
 npm run lab:validate-experiment -- experiments/example.json
 ```

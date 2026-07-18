@@ -41,6 +41,20 @@ describe("experiment catalog schema v1", () => {
     expect(() => assertExperimentRecord(validRecord)).not.toThrow();
   });
 
+  it("validates the observed High Sierra short-sample rejection", () => {
+    const observation = JSON.parse(readFileSync(
+      new URL("../../../../experiments/duration-threshold-001/catalog/observed-100f-rejection.json", import.meta.url),
+      "utf8",
+    ));
+    expect(validateExperimentRecord(observation)).toEqual({ valid: true, errors: [] });
+    expect(observation).toMatchObject({
+      status: "OBSERVED",
+      source: { path: "fixtures/source/mono-silence-100f.wav", parameters: { frames: 100 } },
+      officialConversion: { converterVersion: "1.00", operatingSystem: "macOS High Sierra" },
+    });
+    expect(observation.actualObservation).toContain("must be longer than 100 ms");
+  });
+
   it.each(["READY", "confirmed", ""])("rejects unsupported status %s", (status) => {
     expect(validateExperimentRecord({ ...validRecord, status }).valid).toBe(false);
   });

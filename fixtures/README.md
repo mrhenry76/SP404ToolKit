@@ -4,12 +4,37 @@
 and their metadata records. Do not add copyrighted audio or unverified Roland
 output.
 
-- `source`: small synthetic WAV inputs
+- `source`: synthetic WAV inputs; the Batch 001 files use 5000 frames
+- `source/duration-threshold`: isolated 4409/4410/4411/4500/5000-frame matrix
 - `roland-output`: matching official converter outputs with provenance
 - `pad-info`: controlled `PAD_INFO.BIN` cases
 - `malformed`: generated negative parser cases
 
 See `docs/testing.md` and `docs/reverse-engineering.md` before adding binaries.
 
-Regenerate the source set with `npm run lab:fixtures` and review
+Regenerate the source set with `npm run lab:fixtures -- --overwrite` and review
 `docs/reverse-engineering/fixture-generation.md` for the exact signal rules.
+Legacy 100-frame and 1000-frame files are retained only for internal parser
+tests and are excluded from the official Roland conversion procedure.
+
+## Generated fixture catalog
+
+| File | Frames | Channels | Duration | SHA-256 |
+|---|---:|---:|---:|---|
+| `mono-silence-5000f.wav` | 5000 | 1 | 113.3787 ms | `281ddc54f0cbb70817abec92a7e806bec56f4a72344983c5557d2b090ec4f49f` |
+| `mono-impulse-5000f.wav` | 5000 | 1 | 113.3787 ms | `2d4e969b795208e1a0d4e4a6100de7fbfd3510d5ee7491f95aa1092c0436628c` |
+| `mono-ascending-5000f.wav` | 5000 | 1 | 113.3787 ms | `4e4f8d80061354c2954d315edf2e3d9dc56bcb408d0f93ac59ec51f5312b60a0` |
+| `stereo-channel-id-5000f.wav` | 5000 | 2 | 113.3787 ms | `01d62891bd5ca90aa61dd413dbbecb78c7a03275dd9dbd4827dcb654c46f825d` |
+| `mono-sine-5000f.wav` | 5000 | 1 | 113.3787 ms | `980c00d65af632028d60347cc17221accaa952ca1b5d0af271e80b2aaccf873e` |
+| `stereo-sine-5000f.wav` | 5000 | 2 | 113.3787 ms | `7b28e06aaa2d6d33be93de60aadfac356dbffec1c0822496452a40b22bda8fee` |
+
+Only the first five files belong to Batch 001. The stereo sine remains a
+general laboratory fixture.
+
+| Duration-threshold file | Frames | Exact duration | SHA-256 |
+|---|---:|---:|---|
+| `mono-silence-4409f.wav` | 4409 | `4409 / 44100` s | `88a48b37a58a05299851a5b66d315880645ea5594be5ea3daa10486d186e69db` |
+| `mono-silence-4410f.wav` | 4410 | `4410 / 44100` s | `f971a9aaa8626894132d1d3d7139e0f06b01f3beb894f680f5033eccfbbcd969` |
+| `mono-silence-4411f.wav` | 4411 | `4411 / 44100` s | `5a18f07df252b1ac3953e847de9df010cd0c40ab8bc855798544f895275a860b` |
+| `mono-silence-4500f.wav` | 4500 | `4500 / 44100` s | `556bb71034da8a0bebb92c690bb7bf641709317d807116eb0501e7a69305f5d7` |
+| `mono-silence-5000f.wav` | 5000 | `5000 / 44100` s | `281ddc54f0cbb70817abec92a7e806bec56f4a72344983c5557d2b090ec4f49f` |
