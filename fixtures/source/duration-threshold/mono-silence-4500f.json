@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "generatorVersion": "0.2.0",
+  "signalType": "silence",
+  "parameters": {
+    "frequencyHz": 440,
+    "amplitude": 0.5,
+    "impulseFrame": 0,
+    "constantValue": 1000,
+    "ascendingStart": -2250,
+    "ascendingStep": 1
+  },
+  "sampleRate": 44100,
+  "bitDepth": 16,
+  "channels": 1,
+  "frames": 4500,
+  "fileSize": 9044,
+  "sha256": "556bb71034da8a0bebb92c690bb7bf641709317d807116eb0501e7a69305f5d7"
+}

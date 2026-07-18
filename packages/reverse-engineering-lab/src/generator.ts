@@ -171,19 +171,36 @@ export async function writeGeneratedFixture(
   return generated;
 }
 
-export const INITIAL_FIXTURES: ReadonlyArray<{ fileName: string; options: GeneratorOptions }> = [
-  { fileName: "mono-silence-100f.wav", options: { signalType: "silence", frames: 100, channels: 1 } },
-  { fileName: "mono-impulse-100f.wav", options: { signalType: "impulse", frames: 100, channels: 1, impulseFrame: 0, amplitude: 1 } },
-  { fileName: "mono-ascending-100f.wav", options: { signalType: "ascending", frames: 100, channels: 1, ascendingStart: -50 } },
-  { fileName: "stereo-channel-id-100f.wav", options: { signalType: "stereo-channel-id", frames: 100, channels: 2 } },
-  { fileName: "mono-sine-1000f.wav", options: { signalType: "sine", frames: 1_000, channels: 1, frequencyHz: 440, amplitude: 0.5 } },
-  { fileName: "stereo-sine-1000f.wav", options: { signalType: "sine", frames: 1_000, channels: 2, frequencyHz: 440, amplitude: 0.5 } },
+export type FixtureDefinition = { fileName: string; options: GeneratorOptions };
+
+export const BATCH_001_FIXTURES: ReadonlyArray<FixtureDefinition> = [
+  { fileName: "mono-silence-5000f.wav", options: { signalType: "silence", frames: 5_000, channels: 1 } },
+  { fileName: "mono-impulse-5000f.wav", options: { signalType: "impulse", frames: 5_000, channels: 1, impulseFrame: 0, amplitude: 1 } },
+  { fileName: "mono-ascending-5000f.wav", options: { signalType: "ascending", frames: 5_000, channels: 1, ascendingStart: -50 } },
+  { fileName: "stereo-channel-id-5000f.wav", options: { signalType: "stereo-channel-id", frames: 5_000, channels: 2 } },
+  { fileName: "mono-sine-5000f.wav", options: { signalType: "sine", frames: 5_000, channels: 1, frequencyHz: 440, amplitude: 0.5 } },
+];
+
+export const DURATION_THRESHOLD_FIXTURES: ReadonlyArray<FixtureDefinition> = [
+  { fileName: "mono-silence-4409f.wav", options: { signalType: "silence", frames: 4_409, channels: 1 } },
+  { fileName: "mono-silence-4410f.wav", options: { signalType: "silence", frames: 4_410, channels: 1 } },
+  { fileName: "mono-silence-4411f.wav", options: { signalType: "silence", frames: 4_411, channels: 1 } },
+  { fileName: "mono-silence-4500f.wav", options: { signalType: "silence", frames: 4_500, channels: 1 } },
+  { fileName: "mono-silence-5000f.wav", options: { signalType: "silence", frames: 5_000, channels: 1 } },
+];
+
+export const INITIAL_FIXTURES: ReadonlyArray<FixtureDefinition> = [
+  ...BATCH_001_FIXTURES,
+  { fileName: "stereo-sine-5000f.wav", options: { signalType: "sine", frames: 5_000, channels: 2, frequencyHz: 440, amplitude: 0.5 } },
 ];
 
 export async function writeInitialFixtures(outputDirectory: string, writeOptions: WriteFixtureOptions = {}): Promise<GeneratedFixture[]> {
   const results: GeneratedFixture[] = [];
   for (const fixture of INITIAL_FIXTURES) {
     results.push(await writeGeneratedFixture(path.join(outputDirectory, fixture.fileName), fixture.options, writeOptions));
+  }
+  for (const fixture of DURATION_THRESHOLD_FIXTURES) {
+    results.push(await writeGeneratedFixture(path.join(outputDirectory, "duration-threshold", fixture.fileName), fixture.options, writeOptions));
   }
   return results;
 }

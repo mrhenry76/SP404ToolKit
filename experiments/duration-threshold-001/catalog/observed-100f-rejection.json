@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "experimentId": "duration-threshold-001-observed-100f-rejection",
+  "createdAt": "2026-07-18T00:00:00Z",
+  "operator": "UNKNOWN",
+  "status": "OBSERVED",
+  "changedVariable": "source duration in frames",
+  "source": {
+    "path": "fixtures/source/mono-silence-100f.wav",
+    "sha256": "1f1f9bfb1126643502058b321bd6e3914f36a7e4ab4d66460970a1e6ec3993df",
+    "generatorVersion": "0.2.0",
+    "parameters": {
+      "signalType": "silence",
+      "sampleRate": 44100,
+      "bitDepth": 16,
+      "channels": 1,
+      "frames": 100,
+      "durationMilliseconds": 2.2675736961451247
+    }
+  },
+  "officialConversion": {
+    "converterName": "SP-404SX Wave Converter",
+    "converterVersion": "1.00",
+    "operatingSystem": "macOS High Sierra",
+    "settings": {},
+    "outputPath": "",
+    "sha256": ""
+  },
+  "hardwareVerification": {
+    "performed": false,
+    "model": "",
+    "firmware": "",
+    "result": "",
+    "notes": ""
+  },
+  "redistribution": {
+    "allowed": true,
+    "basis": "Project-generated synthetic source fixture; no Roland output is included."
+  },
+  "expectedObservation": "Determine converter acceptance for a canonical short PCM16 44.1 kHz WAV.",
+  "actualObservation": "OBSERVATION: The official converter rejected a 100-frame mono PCM16 44.1 kHz WAV because the sample must be longer than 100 ms.",
+  "notes": [
+    "Evidence state remains OBSERVED until cases immediately below and above 100 ms are tested.",
+    "The exact user-interface message was not captured verbatim and must be recorded during the threshold matrix."
+  ]
+}

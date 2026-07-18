@@ -12,11 +12,19 @@ npm ci
 npm run lab:fixtures -- --overwrite
 ```
 
-Il comando crea i sei WAV in `fixtures/source` e un JSON con lo stesso nome
+Il comando crea sei WAV principali in `fixtures/source`, cinque WAV per la
+soglia in `fixtures/source/duration-threshold` e un JSON con lo stesso nome
 base per ciascun file. Il JSON contiene parametri, dimensione e SHA-256.
 `--overwrite` è necessario perché le fixture iniziali sono già versionate nel
 repository. Senza questa opzione il generatore rifiuta di sostituire sia il WAV
 sia il relativo JSON.
+
+Le sorgenti ufficiali del Batch 001 hanno 5000 frame. Le vecchie fixture da
+100 e 1000 frame restano soltanto materiale interno per parser e test e non
+devono essere trasferite al converter Roland.
+
+Il set `duration-threshold` contiene silenzi da 4409, 4410, 4411, 4500 e 5000
+frame. Serve esclusivamente a osservare il limite di durata del converter.
 
 ## Generare un file personalizzato
 

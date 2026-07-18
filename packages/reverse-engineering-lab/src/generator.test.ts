@@ -4,7 +4,15 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { getPcmBytes, parseWav } from "@sp404-toolkit/wav";
-import { generatePcm16Fixture, INITIAL_FIXTURES, writeGeneratedFixture } from "./generator.js";
+import {
+  BATCH_001_FIXTURES,
+  DURATION_THRESHOLD_FIXTURES,
+  generatePcm16Fixture,
+  INITIAL_FIXTURES,
+  LAB_SAMPLE_RATE,
+  writeGeneratedFixture,
+  writeInitialFixtures,
+} from "./generator.js";
 
 function int16Values(bytes: Uint8Array): number[] {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -59,7 +67,7 @@ describe("deterministic PCM16 fixture generator", () => {
   });
 
   it("is byte-identical and records the actual SHA-256", () => {
-    const options = { signalType: "sine", frames: 1_000, channels: 1, frequencyHz: 440, amplitude: 0.5 } as const;
+    const options = { signalType: "sine", frames: 5_000, channels: 1, frequencyHz: 440, amplitude: 0.5 } as const;
     const first = generatePcm16Fixture(options);
     const second = generatePcm16Fixture(options);
     expect(first.wav).toEqual(second.wav);
@@ -69,13 +77,64 @@ describe("deterministic PCM16 fixture generator", () => {
 
   it("locks the cross-platform hashes of the initial fixture set", () => {
     expect(INITIAL_FIXTURES.map(({ options }) => generatePcm16Fixture(options).metadata.sha256)).toEqual([
-      "1f1f9bfb1126643502058b321bd6e3914f36a7e4ab4d66460970a1e6ec3993df",
-      "65bf2634311f8295584dee19f47c60196a37905c2b0aed6acccc20433bfd5259",
-      "8efa166d0ac9b2d65bd8b591082efb5edefae83ba2f7f714175453b309265177",
-      "0ba654a3c074f3630fdea9af93b2205cc0a418162554b343afa06c76a78a5df7",
-      "52559f051f5a7c4a9aa942a53dd1a2ce596abb70817cf257292876c4c57073a7",
-      "1387610f9242be5ad90f83e149dd68104ceac39062a0ad663ba2e9c2ff929c48",
+      "281ddc54f0cbb70817abec92a7e806bec56f4a72344983c5557d2b090ec4f49f",
+      "2d4e969b795208e1a0d4e4a6100de7fbfd3510d5ee7491f95aa1092c0436628c",
+      "4e4f8d80061354c2954d315edf2e3d9dc56bcb408d0f93ac59ec51f5312b60a0",
+      "01d62891bd5ca90aa61dd413dbbecb78c7a03275dd9dbd4827dcb654c46f825d",
+      "980c00d65af632028d60347cc17221accaa952ca1b5d0af271e80b2aaccf873e",
+      "7b28e06aaa2d6d33be93de60aadfac356dbffec1c0822496452a40b22bda8fee",
     ]);
+    expect(DURATION_THRESHOLD_FIXTURES.map(({ options }) => generatePcm16Fixture(options).metadata.sha256)).toEqual([
+      "88a48b37a58a05299851a5b66d315880645ea5594be5ea3daa10486d186e69db",
+      "f971a9aaa8626894132d1d3d7139e0f06b01f3beb894f680f5033eccfbbcd969",
+      "5a18f07df252b1ac3953e847de9df010cd0c40ab8bc855798544f895275a860b",
+      "556bb71034da8a0bebb92c690bb7bf641709317d807116eb0501e7a69305f5d7",
+      "281ddc54f0cbb70817abec92a7e806bec56f4a72344983c5557d2b090ec4f49f",
+    ]);
+  });
+
+  it("uses exact frame counts and derived durations for Batch 001", () => {
+    for (const fixture of BATCH_001_FIXTURES) {
+      const generated = generatePcm16Fixture(fixture.options);
+      expect(generated.metadata.frames).toBe(5_000);
+      expect(generated.metadata.frames / generated.metadata.sampleRate).toBeCloseTo(50 / 441, 15);
+      expect((generated.metadata.frames * 1_000) / generated.metadata.sampleRate).toBeCloseTo(113.37868480725623, 12);
+      expect(fixture.fileName).toMatch(/-5000f\.wav$/);
+    }
+  });
+
+  it("keeps the duration-threshold matrix exact and separate", () => {
+    expect(DURATION_THRESHOLD_FIXTURES.map(({ options }) => options.frames)).toEqual([4_409, 4_410, 4_411, 4_500, 5_000]);
+    expect(DURATION_THRESHOLD_FIXTURES.map(({ options }) => (options.frames * 1_000) / LAB_SAMPLE_RATE)).toEqual([
+      99.97732426303855,
+      100,
+      100.02267573696145,
+      102.04081632653062,
+      113.37868480725623,
+    ]);
+  });
+
+  it("writes coherent file names and metadata for all generated sets", async () => {
+    const directory = await mkdtemp(path.join(tmpdir(), "sp404-fixture-set-"));
+    try {
+      const generated = await writeInitialFixtures(directory);
+      expect(generated).toHaveLength(INITIAL_FIXTURES.length + DURATION_THRESHOLD_FIXTURES.length);
+      for (const [subdirectory, fixtures] of [["", INITIAL_FIXTURES], ["duration-threshold", DURATION_THRESHOLD_FIXTURES]] as const) {
+        for (const fixture of fixtures) {
+          const baseName = fixture.fileName.slice(0, -4);
+          const metadata = JSON.parse(await readFile(path.join(directory, subdirectory, `${baseName}.json`), "utf8"));
+          const wavBytes = await readFile(path.join(directory, subdirectory, fixture.fileName));
+          const wav = parseWav(wavBytes);
+          expect(metadata.frames).toBe(fixture.options.frames);
+          expect(metadata.fileSize).toBe(wavBytes.byteLength);
+          expect(metadata.sha256).toBe(createHash("sha256").update(wavBytes).digest("hex"));
+          expect(wav.data.size / wav.format.blockAlign).toBe(fixture.options.frames);
+          expect(fixture.fileName).toContain(`${metadata.frames}f.wav`);
+        }
+      }
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
   });
 
   it("refuses to overwrite fixture files unless explicitly allowed", async () => {

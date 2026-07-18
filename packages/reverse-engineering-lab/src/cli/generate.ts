@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import path from "node:path";
-import { INITIAL_FIXTURES, writeGeneratedFixture, writeInitialFixtures, type SignalType } from "../generator.js";
+import { writeGeneratedFixture, writeInitialFixtures, type SignalType } from "../generator.js";
 import { optionFlag, optionNumber, optionString, parseArgs } from "./args.js";
 
 const SIGNALS = new Set<SignalType>(["silence", "impulse", "constant", "ascending", "sine", "stereo-channel-id"]);
@@ -12,8 +12,8 @@ async function main(): Promise<void> {
   if (preset !== undefined) {
     if (preset !== "initial") throw new Error("Only --preset initial is supported.");
     const outputDirectory = optionString(args, "output-dir") ?? "fixtures/source";
-    await writeInitialFixtures(outputDirectory, writeOptions);
-    console.log(`Generated ${INITIAL_FIXTURES.length} deterministic WAV fixtures and metadata records in ${path.resolve(outputDirectory)}`);
+    const generated = await writeInitialFixtures(outputDirectory, writeOptions);
+    console.log(`Generated ${generated.length} deterministic WAV fixtures and metadata records in ${path.resolve(outputDirectory)}`);
     return;
   }
 

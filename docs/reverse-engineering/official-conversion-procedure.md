@@ -14,15 +14,23 @@ non sulla tua unica scheda SD.
 
 ## File da usare
 
-- `mono-silence-100f.wav`
-- `mono-impulse-100f.wav`
-- `mono-ascending-100f.wav`
-- `stereo-channel-id-100f.wav`
-- `mono-sine-1000f.wav`
+- `mono-silence-5000f.wav`
+- `mono-impulse-5000f.wav`
+- `mono-ascending-5000f.wav`
+- `stereo-channel-id-5000f.wav`
+- `mono-sine-5000f.wav`
 
-Per il test del nome crea due copie identiche di `mono-impulse-100f.wav` e
+Per il test del nome crea due copie identiche di `mono-impulse-5000f.wav` e
 chiamale `impulse-name-alpha.wav` e `impulse-name-beta.wav`. Non modificarne il
 contenuto.
+
+Tutti questi file contengono esattamente 5000 frame, equivalenti a
+`5000 / 44100` secondi, cioè circa 113,38 ms. Non usare nel Batch 001 le
+precedenti fixture da 100 o 1000 frame.
+
+I cinque silenzi per misurare la soglia del converter si trovano in
+`fixtures/source/duration-threshold` e seguono esclusivamente la procedura
+separata `experiments/duration-threshold-001/README.md`.
 
 ## Conversione
 

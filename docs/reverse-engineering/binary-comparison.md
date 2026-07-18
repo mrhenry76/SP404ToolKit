@@ -5,7 +5,7 @@ Questi strumenti sono esclusivamente diagnostici e non modificano i file.
 ## Ispezionare un WAV
 
 ```sh
-npm run lab:inspect -- fixtures/source/mono-impulse-100f.wav
+npm run lab:inspect -- fixtures/source/mono-impulse-5000f.wav
 ```
 
 Output JSON:
