@@ -4,8 +4,9 @@ SP404 Toolkit is an open-source, local-first web application for importing,
 checking, mapping and eventually converting WAV samples for the Roland
 SP-404SX and SP-404A.
 
-> Foundation v0.1 is under active development. Roland conversion is not yet
-> implemented and no compatibility claim is made at this stage.
+> Foundation v0.1, Reverse Engineering Lab v0.2 and PAD_INFO Analyzer v0.1 are
+> complete. Roland export is not yet implemented; compatibility claims for
+> generated Roland files remain out of scope at this stage.
 
 ## Foundation v0.1
 
