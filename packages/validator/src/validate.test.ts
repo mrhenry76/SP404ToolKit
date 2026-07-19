@@ -7,6 +7,7 @@ import {
   validateSourceAvailability,
   validateWav,
   validationMessageForWavError,
+  validationMessageForProjectAssignment,
 } from "./validate.js";
 import { WavParseError } from "@sp404-toolkit/wav";
 
@@ -85,6 +86,22 @@ describe("validation", () => {
       sampleId: "broken",
       pad: "B2",
       suggestedAction: "Choose a structurally valid RIFF/WAVE file.",
+    });
+  });
+  it("reports occupied pads without proposing an automatic correction", () => {
+    expect(validationMessageForProjectAssignment({
+      ok: false,
+      code: "PAD_OCCUPIED",
+      project: { schemaVersion: 1, target: "SP404SX", samples: [] },
+      sampleId: "kick",
+      pad: "A1",
+      occupiedBySampleId: "snare",
+    })).toMatchObject({
+      category: "mapping",
+      code: "PAD_OCCUPIED",
+      sampleId: "kick",
+      pad: "A1",
+      suggestedAction: "Unassign the current occupant before assigning this pad.",
     });
   });
 });

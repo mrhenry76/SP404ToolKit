@@ -1,6 +1,7 @@
 import type {
   AutomaticPadAssignment,
   PadId,
+  ProjectAssignmentResult,
   ProjectTarget,
   ValidationMessage,
 } from "@sp404-toolkit/core";
@@ -155,4 +156,26 @@ export function hardwareCompatibilityNotice(target: ProjectTarget): ValidationMe
     code: "HARDWARE_COMPATIBILITY_UNVERIFIED",
     message: `${target} is a project target only; hardware-compatible Roland export is not available.`,
   };
+}
+
+export function validationMessageForProjectAssignment(
+  result: ProjectAssignmentResult,
+): ValidationMessage | null {
+  if (result.ok) return null;
+  if (result.code === "PAD_OCCUPIED") {
+    return withContext({
+      severity: "error",
+      category: "mapping",
+      code: "PAD_OCCUPIED",
+      message: `Pad ${result.pad} is already occupied.`,
+      suggestedAction: "Unassign the current occupant before assigning this pad.",
+    }, { sampleId: result.sampleId, pad: result.pad });
+  }
+  return withContext({
+    severity: "error",
+    category: "mapping",
+    code: "SAMPLE_NOT_FOUND",
+    message: "The selected sample no longer exists in the project.",
+    suggestedAction: "Refresh the project state and choose an existing sample.",
+  }, { sampleId: result.sampleId });
 }
