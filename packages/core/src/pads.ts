@@ -13,7 +13,7 @@ export const ALL_PAD_IDS: readonly PadId[] = PAD_BANKS.flatMap((bank) =>
 const PAD_SET = new Set<string>(ALL_PAD_IDS);
 
 export function isPadId(value: string): value is PadId {
-  return PAD_SET.has(value.toUpperCase());
+  return PAD_SET.has(value);
 }
 
 export function normalizePadId(value: string): PadId | null {
@@ -42,22 +42,76 @@ export function firstFreePad(occupied: Iterable<PadId>): PadId | null {
   return ALL_PAD_IDS.find((pad) => !used.has(pad)) ?? null;
 }
 
+export type AutomaticPadAssignment =
+  | {
+      status: "assigned";
+      code: "AUTO_PAD_ASSIGNED";
+      fileName: string;
+      requestedPad: PadId;
+      pad: PadId;
+    }
+  | {
+      status: "fallback";
+      code: "AUTO_PAD_FALLBACK";
+      fileName: string;
+      requestedPad: PadId | null;
+      pad: PadId;
+      reason: "PAD_OCCUPIED" | "NO_FILENAME_MATCH";
+    }
+  | {
+      status: "unassigned";
+      code: "PAD_EXHAUSTED";
+      fileName: string;
+      requestedPad: PadId | null;
+      pad: null;
+    };
+
+/** Plans deterministic assignments without mutating the supplied occupied pads. */
+export function planAutomaticPadAssignments(
+  fileNames: readonly string[],
+  occupied: Iterable<PadId> = [],
+): AutomaticPadAssignment[] {
+  const used = new Set(occupied);
+  const planned = fileNames.map((fileName): AutomaticPadAssignment | {
+    fileName: string;
+    requestedPad: PadId | null;
+    status: "pending";
+  } => {
+    const requestedPad = parsePadFromFileName(fileName);
+    if (requestedPad && !used.has(requestedPad)) {
+      used.add(requestedPad);
+      return { status: "assigned", code: "AUTO_PAD_ASSIGNED", fileName, requestedPad, pad: requestedPad };
+    }
+    return { status: "pending", fileName, requestedPad };
+  });
+
+  return planned.map((assignment): AutomaticPadAssignment => {
+    if (assignment.status !== "pending") return assignment;
+    const pad = firstFreePad(used);
+    if (!pad) {
+      return {
+        status: "unassigned",
+        code: "PAD_EXHAUSTED",
+        fileName: assignment.fileName,
+        requestedPad: assignment.requestedPad,
+        pad: null,
+      };
+    }
+    used.add(pad);
+    return {
+      status: "fallback",
+      code: "AUTO_PAD_FALLBACK",
+      fileName: assignment.fileName,
+      requestedPad: assignment.requestedPad,
+      pad,
+      reason: assignment.requestedPad ? "PAD_OCCUPIED" : "NO_FILENAME_MATCH",
+    };
+  });
+}
+
 export function assignPadsFromFileNames(fileNames: readonly string[]): Array<{
   fileName: string;
   pad: PadId | null;
 }> {
-  const used = new Set<PadId>();
-  const assignments = fileNames.map((fileName) => {
-    const requested = parsePadFromFileName(fileName);
-    const pad = requested && !used.has(requested) ? requested : null;
-    if (pad) used.add(pad);
-    return { fileName, pad };
-  });
-
-  for (const assignment of assignments) {
-    if (assignment.pad) continue;
-    assignment.pad = firstFreePad(used);
-    if (assignment.pad) used.add(assignment.pad);
-  }
-  return assignments;
+  return planAutomaticPadAssignments(fileNames).map(({ fileName, pad }) => ({ fileName, pad }));
 }

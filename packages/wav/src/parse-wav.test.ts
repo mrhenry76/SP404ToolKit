@@ -16,6 +16,19 @@ function chunk(id: string, body: number[]): number[] {
   ];
 }
 
+function riff(body: number[]): Uint8Array {
+  const riffSize = body.length + 4;
+  return new Uint8Array([
+    ...ascii("RIFF"),
+    riffSize & 0xff,
+    (riffSize >>> 8) & 0xff,
+    (riffSize >>> 16) & 0xff,
+    (riffSize >>> 24) & 0xff,
+    ...ascii("WAVE"),
+    ...body,
+  ]);
+}
+
 function makeWav(options: { fmtSize?: 16 | 18; beforeFmt?: number[]; pcm?: number[] } = {}): Uint8Array {
   const fmt = [
     1, 0, // PCM
@@ -31,21 +44,13 @@ function makeWav(options: { fmtSize?: 16 | 18; beforeFmt?: number[]; pcm?: numbe
     ...chunk("fmt ", fmt),
     ...chunk("data", options.pcm ?? [0, 0, 1, 0]),
   ];
-  const riffSize = body.length + 4;
-  return new Uint8Array([
-    ...ascii("RIFF"),
-    riffSize & 0xff,
-    (riffSize >>> 8) & 0xff,
-    (riffSize >>> 16) & 0xff,
-    (riffSize >>> 24) & 0xff,
-    ...ascii("WAVE"),
-    ...body,
-  ]);
+  return riff(body);
 }
 
 describe("parseWav", () => {
   it("reads PCM metadata, duration and bytes", () => {
     const input = makeWav();
+    const original = input.slice();
     const wav = parseWav(input);
     expect(wav.format).toEqual({
       audioFormat: 1,
@@ -58,6 +63,7 @@ describe("parseWav", () => {
     });
     expect(wav.durationSeconds).toBeCloseTo(2 / 44100);
     expect(Array.from(getPcmBytes(input, wav))).toEqual([0, 0, 1, 0]);
+    expect(input).toEqual(original);
   });
 
   it("handles unknown odd chunks, padding and an 18-byte fmt chunk", () => {
@@ -80,5 +86,30 @@ describe("parseWav", () => {
     const body = chunk("data", [0, 0]);
     const input = new Uint8Array([...ascii("RIFF"), body.length + 4, 0, 0, 0, ...ascii("WAVE"), ...body]);
     expect(() => parseWav(input)).toThrowError(/fmt chunk/);
+  });
+
+  it("rejects a truncated fmt chunk", () => {
+    const input = makeWav();
+    new DataView(input.buffer).setUint32(16, 15, true);
+    expect(() => parseWav(input)).toThrowError(/shorter than 16 bytes/);
+  });
+
+  it("rejects a truncated chunk header", () => {
+    const valid = makeWav();
+    const fmtChunk = Array.from(valid.subarray(12, 36));
+    expect(() => parseWav(riff([...fmtChunk, 1, 2, 3, 4]))).toThrowError(/header.*truncated/i);
+  });
+
+  it("rejects truncated chunk data", () => {
+    const input = makeWav();
+    new DataView(input.buffer).setUint32(40, 10, true);
+    expect(() => parseWav(input)).toThrowError(/data.*truncated/i);
+  });
+
+  it("rejects missing padding after an odd unknown chunk", () => {
+    const valid = makeWav();
+    const body = Array.from(valid.subarray(12));
+    const oddWithoutPadding = [...ascii("JUNK"), 3, 0, 0, 0, 1, 2, 3];
+    expect(() => parseWav(riff([...body, ...oddWithoutPadding]))).toThrowError(/padding/i);
   });
 });

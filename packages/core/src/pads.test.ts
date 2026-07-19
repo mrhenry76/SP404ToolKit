@@ -3,6 +3,7 @@ import {
   ALL_PAD_IDS,
   assignPadsFromFileNames,
   isPadId,
+  planAutomaticPadAssignments,
   parsePadFromFileName,
 } from "./pads.js";
 
@@ -16,7 +17,8 @@ describe("pad model", () => {
 
   it("validates pad boundaries", () => {
     expect(isPadId("A1")).toBe(true);
-    expect(isPadId("j12")).toBe(true);
+    expect(isPadId("J12")).toBe(true);
+    expect(isPadId("j12")).toBe(false);
     expect(isPadId("A0")).toBe(false);
     expect(isPadId("J13")).toBe(false);
     expect(isPadId("K1")).toBe(false);
@@ -45,5 +47,26 @@ describe("filename mapping", () => {
       { fileName: "kick.wav", pad: "A1" },
       { fileName: "A2-clap.wav", pad: "A3" },
     ]);
+  });
+
+  it("explains occupied and filename-free fallbacks", () => {
+    expect(planAutomaticPadAssignments(["[A2] snare.wav", "kick.wav", "A2-clap.wav"])).toEqual([
+      { status: "assigned", code: "AUTO_PAD_ASSIGNED", fileName: "[A2] snare.wav", requestedPad: "A2", pad: "A2" },
+      { status: "fallback", code: "AUTO_PAD_FALLBACK", fileName: "kick.wav", requestedPad: null, pad: "A1", reason: "NO_FILENAME_MATCH" },
+      { status: "fallback", code: "AUTO_PAD_FALLBACK", fileName: "A2-clap.wav", requestedPad: "A2", pad: "A3", reason: "PAD_OCCUPIED" },
+    ]);
+  });
+
+  it("reports exhausted pads and leaves samples over the limit unassigned", () => {
+    const names = Array.from({ length: 121 }, (_, index) => `sample-${index}.wav`);
+    const assignments = planAutomaticPadAssignments(names);
+    expect(assignments.slice(0, 120).every(({ pad }) => pad !== null)).toBe(true);
+    expect(assignments[120]).toEqual({
+      status: "unassigned",
+      code: "PAD_EXHAUSTED",
+      fileName: "sample-120.wav",
+      requestedPad: null,
+      pad: null,
+    });
   });
 });

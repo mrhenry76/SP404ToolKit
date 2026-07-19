@@ -21,15 +21,22 @@ whether it can be exported. RF64, Wave64 and RIFX are not supported.
 ```json
 {
   "version": 1,
-  "target": "SP404SX",
+  "target": "SP404A",
   "samples": [
     { "pad": "A1", "file": "Kick.wav", "name": "Kick" }
   ]
 }
 ```
 
-Pads may be `null` before assignment. Valid IDs run from A1 through J12. A
-manifest contains at most 120 samples and may not assign one pad twice.
+The target is either `SP404SX` or `SP404A`; it records project intent rather
+than verified hardware compatibility. Pads may be `null` before assignment.
+Valid IDs run from A1 through J12. A manifest contains at most 120 samples and
+may not assign one pad twice.
+
+Sample order, filename, logical name and pad assignment are portable. Browser
+`File` objects, audio bytes, derived WAV metadata and validation results remain
+outside the manifest. After reopening a manifest, local WAV sources must be
+relinked; filename matching is automatic only when the match is unique.
 
 ## Roland output
 
