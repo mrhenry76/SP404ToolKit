@@ -1,6 +1,11 @@
 import type { PadId } from "./pads.js";
 
-export type ProjectTarget = "SP404SX" | "SP404A";
+export const PROJECT_TARGETS = ["SP404SX", "SP404A"] as const;
+export type ProjectTarget = (typeof PROJECT_TARGETS)[number];
+
+export function isProjectTarget(value: string): value is ProjectTarget {
+  return (PROJECT_TARGETS as readonly string[]).includes(value);
+}
 
 export type ValidationSeverity = "error" | "warning" | "info";
 export type ValidationCategory = "wav-structure" | "technical" | "mapping" | "source" | "compatibility";
