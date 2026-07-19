@@ -34,15 +34,21 @@ Status: complete.
 
 ## Next release — reliable SX/A project workflow
 
+Status: implementation candidate; completion requires full validation and
+review.
+
 The next release remains focused on Roland SP-404SX and SP-404A. Its priorities
 are reliability and a complete local project workflow:
 
-- multi-file WAV import;
+- incremental multi-file WAV import and read-only analysis;
 - explicit A1–J12 assignment and reassignment;
-- clear technical and mapping validation;
-- portable manifest download and reopen;
+- clear technical, mapping and local-source validation;
+- portable manifest download, reopen and explicit source relinking;
 - preservation of original audio bytes;
-- user-visible consent before any operation that could transform audio.
+- a visible boundary between project target and verified hardware compatibility.
+
+This milestone does not transform audio. Any future transformative operation
+would require explicit user consent.
 
 Compatibility evidence takes priority over feature count.
 

@@ -8,6 +8,22 @@ SP-404SX and SP-404A.
 > complete. Roland export is not yet implemented; compatibility claims for
 > generated Roland files remain out of scope at this stage.
 
+## Reliable SX/A project workflow
+
+The current implementation candidate adds a complete local planning workflow
+for SP-404SX and SP-404A projects:
+
+- add WAV files incrementally and inspect them without changing their bytes;
+- review contextual WAV, mapping and source diagnostics;
+- assign, reassign and unassign pads A1–J12 explicitly;
+- download and reopen a portable manifest;
+- relink local WAV sources after reopening, with ambiguous duplicate filenames
+  left for explicit user choice.
+
+The SP-404A target records project intent only. It does not prove binary or
+hardware compatibility. The application does not create Roland files or
+transform audio.
+
 ## Foundation v0.1
 
 This milestone provides:
@@ -35,12 +51,13 @@ npm run dev
 ```
 
 Vite prints the local URL. Files selected in the application stay on the
-device; Foundation v0.1 does not upload audio anywhere.
+device and are not uploaded.
 
 ## Verification
 
 ```sh
 npm test
+npm run check:docs
 npm run typecheck
 npm run build
 ```
