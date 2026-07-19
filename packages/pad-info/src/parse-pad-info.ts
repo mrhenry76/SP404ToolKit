@@ -16,6 +16,7 @@ export const PAD_INFO_FORMAT = {
 } as const;
 
 export const PAD_INFO_EMPTY_SIZE = 512 as const;
+const PAD_INFO_PCM_OFFSET = 512 as const;
 
 function decodeStatus(flags: number): PadInfoStatus {
   if (flags === PAD_INFO_FLAGS.occupied) return "occupied";
@@ -46,10 +47,15 @@ function parseRecord(view: DataView, index: number): PadInfoRecord {
   if (pcmOffset !== pcmOffsetDuplicate) issues.push("PCM offset duplicate does not match.");
   if (wavSize !== wavSizeDuplicate) issues.push("WAV size duplicate does not match.");
   if (status === "unknown") issues.push(`Unknown flags value 0x${flags.toString(16).padStart(8, "0")}.`);
+  if (status !== "unknown" && pcmOffset !== PAD_INFO_PCM_OFFSET) {
+    issues.push(`PCM offset is ${pcmOffset}; expected ${PAD_INFO_PCM_OFFSET}.`);
+  }
   if (status === "occupied" && decodedFormat.layout === "unknown") {
     issues.push(`Unknown occupied-pad format 0x${format.toString(16).padStart(8, "0")}.`);
   }
-  if (status === "occupied" && wavSize < pcmOffset) issues.push("Occupied-pad size is smaller than its PCM offset.");
+  if (status === "occupied" && wavSize < PAD_INFO_PCM_OFFSET) {
+    issues.push(`Occupied-pad size is smaller than ${PAD_INFO_PCM_OFFSET}.`);
+  }
   if (status === "empty" && wavSize !== PAD_INFO_EMPTY_SIZE) {
     issues.push(`Empty-pad size is ${wavSize}; expected ${PAD_INFO_EMPTY_SIZE}.`);
   }
@@ -57,7 +63,11 @@ function parseRecord(view: DataView, index: number): PadInfoRecord {
   const pad = ALL_PAD_IDS[index];
   if (pad === undefined) throw new RangeError(`PAD_INFO record index ${index} has no pad mapping.`);
   const duplicateFieldsMatch = pcmOffset === pcmOffsetDuplicate && wavSize === wavSizeDuplicate;
-  const pcmByteLength = status === "empty" ? 0 : status === "occupied" && wavSize >= pcmOffset ? wavSize - pcmOffset : null;
+  const pcmByteLength = status === "empty"
+    ? 0
+    : status === "occupied" && pcmOffset === PAD_INFO_PCM_OFFSET && wavSize >= PAD_INFO_PCM_OFFSET
+      ? wavSize - PAD_INFO_PCM_OFFSET
+      : null;
 
   return {
     index,
