@@ -92,11 +92,59 @@ describe("PAD_INFO.BIN read-only parser", () => {
     expect(record).toMatchObject({
       pad: "A1",
       status: "empty",
+      pcmOffset: 512,
       wavSize: 512,
       pcmByteLength: 0,
       channelLayout: null,
       channels: null,
       flags: 0x7f00_0000,
+      issues: [],
+    });
+  });
+
+  it("reports a recognized occupied pad whose PCM offset is not 512", () => {
+    const record = parsePadInfo(makeSyntheticPadInfo([[0, {
+      pcmOffset: 256,
+      wavSize: 10_512,
+      flags: PAD_INFO_FLAGS.occupied,
+    }]])).records[0];
+    expect(record).toMatchObject({
+      status: "occupied",
+      pcmOffset: 256,
+      wavSize: 10_512,
+      pcmByteLength: null,
+      duplicateFieldsMatch: true,
+      issues: ["PCM offset is 256; expected 512."],
+    });
+  });
+
+  it("reports a recognized empty pad whose PCM offset is not 512", () => {
+    const record = parsePadInfo(makeSyntheticPadInfo([[0, {
+      pcmOffset: 1_024,
+      flags: PAD_INFO_FLAGS.empty,
+    }]])).records[0];
+    expect(record).toMatchObject({
+      status: "empty",
+      pcmOffset: 1_024,
+      wavSize: 512,
+      pcmByteLength: 0,
+      duplicateFieldsMatch: true,
+      issues: ["PCM offset is 1024; expected 512."],
+    });
+  });
+
+  it.each([
+    ["0x7F000100", 0x7f00_0100],
+    ["0x7F010100", 0x7f01_0100],
+  ] as const)("preserves uninterpreted flags %s as unknown", (_label, flags) => {
+    const record = parsePadInfo(makeSyntheticPadInfo([[0, { flags }]])).records[0];
+    expect(record).toMatchObject({
+      status: "unknown",
+      flags,
+      channelLayout: null,
+      channels: null,
+      pcmByteLength: null,
+      issues: [`Unknown flags value 0x${flags.toString(16).padStart(8, "0")}.`],
     });
   });
 
