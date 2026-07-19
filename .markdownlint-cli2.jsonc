@@ -1,0 +1,10 @@
+{
+  "config": {
+    // Existing documentation intentionally contains long lines and tables.
+    "MD013": false,
+    // The RIFF chunk name `fmt ` intentionally includes a trailing space.
+    "MD038": false,
+    // Preserve the established compact table delimiter style.
+    "MD060": false
+  }
+}
