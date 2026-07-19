@@ -1,5 +1,7 @@
 import type { PadId } from "./pads.js";
 
+export type ProjectTarget = "SP404SX" | "SP404A";
+
 export type ValidationSeverity = "error" | "warning" | "info";
 
 export type ValidationMessage = {
@@ -29,6 +31,6 @@ export type SampleAsset = {
 
 export type ToolkitProject = {
   schemaVersion: 1;
-  target: "SP404SX";
+  target: ProjectTarget;
   samples: SampleAsset[];
 };
